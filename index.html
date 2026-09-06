@@ -1,1 +1,92 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FLEET NÁŠ CHLÉB</title><style>:root{--bg:#f4f6f8;--card:#fff;--text:#17202a;--muted:#68727d;--accent:#0b7a53;--danger:#c62828;--line:#e1e5e9}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}header{background:#fff;border-bottom:1px solid var(--line);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}.logo{font-weight:800;font-size:20px}.logo span{color:var(--accent)}.container{max-width:720px;margin:auto;padding:20px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:0 2px 10px #00000008}h1{font-size:25px;margin:0 0 8px}h2{font-size:19px;margin:0 0 12px}.muted{color:var(--muted)}.vehicle{display:flex;justify-content:space-between;align-items:center}.plate{font-size:22px;font-weight:800}.status{padding:7px 10px;border-radius:20px;background:#e7f5ef;color:var(--accent);font-weight:700;font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}button{border:0;border-radius:14px;padding:15px 14px;font-size:15px;font-weight:700;cursor:pointer}.action{background:#f1f4f6;color:var(--text);text-align:left;border:1px solid var(--line)}.action strong{display:block;margin-bottom:5px}.action small{color:var(--muted)}.primary{background:var(--accent);color:#fff;width:100%}.back{background:none;padding:0;color:var(--accent);margin-bottom:14px}input,textarea,select{width:100%;padding:13px;border:1px solid #ccd3d9;border-radius:12px;font-size:15px;margin-top:7px}textarea{min-height:110px;resize:vertical}.row{margin:14px 0}.hidden{display:none}.report{border-left:5px solid var(--accent);padding-left:13px;margin:12px 0}.report.danger{border-left-color:var(--danger)}.photo{border:2px dashed #c9d0d6;padding:22px;text-align:center;border-radius:14px;color:var(--muted)}.footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}@media(max-width:520px){.grid{grid-template-columns:1fr}.container{padding:14px}}</style></head><body><header><div class="logo">FLEET <span>NÁŠ CHLÉB</span></div><div class="muted">Řidič</div></header><main class="container"><section id="home"><div class="card"><div class="vehicle"><div><div class="muted">Přihlášený řidič</div><h1>Vladimír</h1></div><div class="status">● Aktivní</div></div><hr style="border:0;border-top:1px solid var(--line);margin:18px 0"><div class="vehicle"><div><div class="muted">Vozidlo</div><div class="plate">6L9 4889</div><div class="muted">Iveco Daily</div></div><div>🚚</div></div></div><div class="card"><h2>Potřebuji nahlásit</h2><div class="grid"><button class="action" onclick="openForm('Poškození vozidla','normal')">🔧<strong>Poškození vozidla</strong><small>Škrábanec, světlo, karoserie…</small></button><button class="action" onclick="openForm('Nehoda','danger')">⚠️<strong>Nehoda</strong><small>Okamžité hlášení dispečerovi</small></button><button class="action" onclick="openForm('Potřebuji servis','normal')">🛠️<strong>Potřebuji servis</strong><small>Porucha nebo kontrola</small></button><button class="action" onclick="openForm('Pneumatiky','normal')">🛞<strong>Pneumatiky</strong><small>Defekt, výměna, opotřebení</small></button></div></div><div class="card"><h2>Rychlé informace</h2><div class="muted">Stav vozidla: <b style="color:var(--accent)">Bez otevřeného hlášení</b></div></div><div class="card"><h2>Dispečer – náhled</h2><button class="primary" onclick="showDispatcher()">Otevřít přehled hlášení</button></div></section><section id="form" class="hidden"><button class="back" onclick="goHome()">← Zpět</button><div class="card"><h1 id="formTitle">Hlášení</h1><div class="muted">Vozidlo 6L9 4889 · Vladimír</div><div class="row"><label>Co se stalo?</label><textarea id="note" placeholder="Stručně popište problém…"></textarea></div><div class="row"><label>Fotografie</label><input id="photo" type="file" accept="image/*" capture="environment"></div><div id="photoPreview" class="photo">📷 Pořídit nebo vybrat fotografii</div><div class="row"><label>Priorita</label><select id="priority"><option>Normální</option><option>Vysoká</option><option>Okamžitě</option></select></div><button class="primary" onclick="sendReport()">Odeslat hlášení</button></div></section><section id="dispatcher" class="hidden"><button class="back" onclick="goHome()">← Zpět</button><div class="card"><h1>Dispečer</h1><div class="muted">Přehled hlášení z prototypu</div></div><div id="reports"></div></section><div class="footer">FLEET NÁŠ CHLÉB · prototyp 0.1 · testovací data</div></main><script>let currentType='';const reports=JSON.parse(localStorage.getItem('fleetReports')||'[]');function hideAll(){['home','form','dispatcher'].forEach(id=>document.getElementById(id).classList.add('hidden'))}function goHome(){hideAll();document.getElementById('home').classList.remove('hidden')}function openForm(type){currentType=type;hideAll();document.getElementById('form').classList.remove('hidden');document.getElementById('formTitle').textContent=type;document.getElementById('note').value='';document.getElementById('photo').value='';document.getElementById('photoPreview').textContent='📷 Pořídit nebo vybrat fotografii'}document.getElementById('photo').addEventListener('change',e=>{if(e.target.files[0])document.getElementById('photoPreview').textContent='📷 '+e.target.files[0].name});function sendReport(){const note=document.getElementById('note').value.trim();if(!note){alert('Napište prosím, co se stalo.');return}reports.unshift({type:currentType,note,priority:document.getElementById('priority').value,date:new Date().toLocaleString('cs-CZ'),driver:'Vladimír',vehicle:'6L9 4889'});localStorage.setItem('fleetReports',JSON.stringify(reports));alert('Hlášení bylo odesláno.');goHome()}function showDispatcher(){hideAll();document.getElementById('dispatcher').classList.remove('hidden');const box=document.getElementById('reports');box.innerHTML=reports.length?reports.map(r=>'<div class="card report '+(r.type==='Nehoda'?'danger':'')+'"><b>'+r.type+'</b><div>'+r.note+'</div><div class="muted">'+r.date+' · '+r.driver+' · '+r.vehicle+' · '+r.priority+'</div></div>').join(''):'<div class="card muted">Zatím žádná hlášení.</div>'}</script></body></html>
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FLEET • Náš Chléb</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">N</div><div><strong>FLEET</strong><small>NÁŠ CHLÉB</small></div></div>
+    <nav>
+      <button class="nav active" data-view="dashboard">▦ <span>Přehled</span></button>
+      <button class="nav" data-view="vehicles">🚚 <span>Vozidla</span></button>
+      <button class="nav" data-view="drivers">👤 <span>Řidiči</span></button>
+      <button class="nav" data-view="service">🔧 <span>Servis</span></button>
+      <button class="nav" data-view="reports">⚠ <span>Hlášení</span></button>
+    </nav>
+    <div class="side-note">Interní fleet systém<br><b>verze 2.0</b></div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">NÁŠ CHLÉB • VOZOVÝ PARK</div>
+        <h1 id="title">Přehled vozového parku</h1>
+        <p id="subtitle">Rychlý přehled vozidel, řidičů, servisu a hlášení.</p>
+      </div>
+      <button class="primary" id="newReportBtn">＋ Nahlásit problém</button>
+    </header>
+
+    <section id="dashboard" class="view">
+      <div class="cards">
+        <div class="card"><span>Vozidla</span><strong id="vehicleCount">0</strong><small>evidovaná vozidla</small></div>
+        <div class="card"><span>Aktivní řidiči</span><strong id="driverCount">0</strong><small>přiřazení k rozvozu</small></div>
+        <div class="card alert"><span>Otevřená hlášení</span><strong id="reportCount">0</strong><small>čekají na vyřízení</small></div>
+        <div class="card"><span>Servis</span><strong id="serviceCount">0</strong><small>plánované / po termínu</small></div>
+      </div>
+
+      <div class="grid2">
+        <div class="panel">
+          <div class="panel-head"><h2>Stav vozového parku</h2><button class="ghost" data-view="vehicles">Zobrazit vše →</button></div>
+          <div id="vehicleStatus"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Poslední hlášení</h2><button class="ghost" data-view="reports">Všechna →</button></div>
+          <div id="recentReports"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="vehicles" class="view hidden">
+      <div class="toolbar"><input id="vehicleSearch" placeholder="🔎 Hledat SPZ, vozidlo nebo řidiče…"><button class="secondary" id="addVehicleBtn">＋ Přidat vozidlo</button></div>
+      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Vozidlo</th><th>SPZ</th><th>Řidič</th><th>Typ</th><th>Stav</th></tr></thead><tbody id="vehiclesTable"></tbody></table></div></div>
+    </section>
+
+    <section id="drivers" class="view hidden">
+      <div class="toolbar"><input id="driverSearch" placeholder="🔎 Hledat řidiče nebo SPZ…"><button class="secondary" id="addDriverBtn">＋ Přidat řidiče</button></div>
+      <div class="panel"><div class="table-wrap"><table><thead><tr><th>Řidič</th><th>Vozidlo</th><th>Telefon</th><th>Trasa / práce</th><th>Stav</th></tr></thead><tbody id="driversTable"></tbody></table></div></div>
+    </section>
+
+    <section id="service" class="view hidden">
+      <div class="toolbar"><div class="filter-tabs"><button class="tab active" data-filter="all">Vše</button><button class="tab" data-filter="soon">Brzy</button><button class="tab" data-filter="overdue">Po termínu</button></div><button class="secondary" id="addServiceBtn">＋ Naplánovat servis</button></div>
+      <div class="panel"><div id="serviceList"></div></div>
+    </section>
+
+    <section id="reports" class="view hidden">
+      <div class="toolbar"><select id="reportFilter"><option value="all">Všechna hlášení</option><option value="open">Otevřená</option><option value="done">Vyřízená</option></select><button class="primary" id="newReportBtn2">＋ Nové hlášení</button></div>
+      <div class="panel"><div id="reportsList"></div></div>
+    </section>
+  </main>
+
+  <div class="modal hidden" id="modal">
+    <div class="modal-box">
+      <button class="close" id="closeModal">×</button>
+      <h2 id="modalTitle">Nové hlášení řidiče</h2>
+      <form id="reportForm">
+        <label>Řidič<select id="reportDriver"></select></label>
+        <label>Vozidlo<select id="reportVehicle"></select></label>
+        <label>Typ problému<select id="reportType"><option>Nehoda</option><option>Poškození vozidla</option><option>Potřeba servisu</option><option>Výměna pneumatik</option><option>Kontrolka / závada</option><option>Jiné</option></select></label>
+        <label>Popis problému<textarea id="reportText" required placeholder="Co se stalo? Co je potřeba udělat?"></textarea></label>
+        <label>Fotografie <input id="reportPhoto" type="file" accept="image/*"><small>Fotka zůstane uložená v tomto prohlížeči.</small></label>
+        <div id="photoPreview"></div>
+        <button class="primary full" type="submit">Odeslat hlášení</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
